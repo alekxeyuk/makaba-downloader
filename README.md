@@ -24,7 +24,7 @@ The application uses `config.json` for configuration:
 
 ## Requirements
 
-- Go 1.25.3 or higher
+- Go 1.25.6 or higher
 - `github.com/tidwall/gjson` v1.18.0
 
 ## Usage
