@@ -11,7 +11,7 @@ type ThreadInfo struct {
 	LastHit int64
 }
 
-func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ignoredSubstrings []string, logger *Logger, lastHits map[string]int64) []ThreadInfo {
+func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ignoredSubstrings []string, lastHits map[string]int64) []ThreadInfo {
 	var threads []ThreadInfo
 	boardID := gjson.GetBytes(catalog, "board.id").String()
 
@@ -38,11 +38,11 @@ func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ig
 			key := boardID + "_" + threadNum
 			storedLastHit, exists := lastHits[key]
 			if !exists || currentLastHit > storedLastHit {
-				logger.Debug("Found matching thread with new activity: %s (lasthit: %d)", threadNum, currentLastHit)
+				Log.Debug("Found matching thread with new activity: %s (lasthit: %d)", threadNum, currentLastHit)
 
 				threadData, err := api.threadGet(boardID, threadNum)
 				if err != nil {
-					logger.Error("Error getting thread %s: %v", threadNum, err)
+					Log.Error("Error getting thread %s: %v", threadNum, err)
 					continue
 				}
 				threads = append(threads, ThreadInfo{Data: threadData, LastHit: currentLastHit})

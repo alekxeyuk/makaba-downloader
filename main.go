@@ -17,10 +17,9 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	logger := NewLogger()
 	appConfig, err := LoadConfig("config.json")
 	if err != nil {
-		logger.Error("Error loading config: %v", err)
+		Log.Error("Error loading config: %v", err)
 		os.Exit(1)
 	}
 
@@ -39,14 +38,14 @@ func main() {
 		sigChan := make(chan os.Signal, 1)
 		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 		<-sigChan
-		logger.Info("Received shutdown signal, initiating graceful shutdown...")
+		Log.Info("Received shutdown signal, initiating graceful shutdown...")
 		cancel()
 	}()
 
 	for {
 		select {
 		case <-ctx.Done():
-			logger.Info("Shutting down...")
+			Log.Info("Shutting down...")
 			downloader.Stop()
 			return
 		default:
@@ -55,7 +54,7 @@ func main() {
 		for _, conf := range appConfig.Boards {
 			select {
 			case <-ctx.Done():
-				logger.Info("Shutting down...")
+				Log.Info("Shutting down...")
 				downloader.Stop()
 				return
 			default:
@@ -63,22 +62,22 @@ func main() {
 
 			catalog, err := api.catalogGet(conf.Board)
 			if err != nil {
-				logger.Error("Error getting catalog for %s: %v", conf.Board, err)
+				Log.Error("Error getting catalog for %s: %v", conf.Board, err)
 				continue
 			}
 
 			alreadyHaveFiles := getAlreadyHaveFiles(conf.DirName)
 
-			threads := getThreads(api, catalog, appConfig.Tags, appConfig.IgnoredTags, logger, lastHits)
+			threads := getThreads(api, catalog, appConfig.Tags, appConfig.IgnoredTags, lastHits)
 			if len(threads) == 0 {
-				logger.Warning("No %s threads found", conf.DirName)
+				Log.Warning("No %s threads found", conf.DirName)
 				continue
 			}
 
 			for _, threadInfo := range threads {
 				select {
 				case <-ctx.Done():
-					logger.Info("Shutting down...")
+					Log.Info("Shutting down...")
 					downloader.Stop()
 					return
 				default:
@@ -87,7 +86,7 @@ func main() {
 				bigThreadNum := gjson.GetBytes(threadInfo.Data, "current_thread").String()
 				err := os.MkdirAll(filepath.Join(conf.DirName, bigThreadNum), 0755)
 				if err != nil {
-					logger.Error("Error creating directory %s: %v", filepath.Join(conf.DirName, bigThreadNum), err)
+					Log.Error("Error creating directory %s: %v", filepath.Join(conf.DirName, bigThreadNum), err)
 					continue
 				}
 
@@ -123,7 +122,7 @@ func main() {
 									downloader.DownloadFileAsync(fileURL, fileName)
 									alreadyHaveFiles[md5] = struct{}{}
 								} else {
-									logger.Info("Unknown file format: %s", gjson.GetBytes([]byte(postFile.Raw), "path").String())
+									Log.Info("Unknown file format: %s", gjson.GetBytes([]byte(postFile.Raw), "path").String())
 								}
 							}
 						}
@@ -142,11 +141,11 @@ func main() {
 		// Save updated last hits
 		saveLastHits(lastHits)
 
-		logger.Info("Done... Sleeping for 180 sec")
+		Log.Info("Done... Sleeping for 180 sec")
 
 		select {
 		case <-ctx.Done():
-			logger.Info("Shutting down...")
+			Log.Info("Shutting down...")
 			downloader.Stop()
 			return
 		case <-time.After(180 * time.Second):

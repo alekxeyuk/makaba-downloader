@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -15,7 +14,7 @@ func loadLastHits() map[string]int64 {
 	file, err := os.Open("lasthits.json")
 	if err != nil {
 		if !os.IsNotExist(err) {
-			log.Printf("Error opening lasthits.json: %v", err)
+			Log.Error("Error opening lasthits.json: %v", err)
 		}
 		return lastHits
 	}
@@ -23,7 +22,7 @@ func loadLastHits() map[string]int64 {
 
 	err = json.NewDecoder(file).Decode(&lastHits)
 	if err != nil {
-		log.Printf("Error decoding lasthits.json: %v", err)
+		Log.Error("Error decoding lasthits.json: %v", err)
 	}
 	return lastHits
 }
@@ -31,14 +30,14 @@ func loadLastHits() map[string]int64 {
 func saveLastHits(lastHits map[string]int64) {
 	file, err := os.Create("lasthits.json")
 	if err != nil {
-		log.Printf("Error creating lasthits.json: %v", err)
+		Log.Error("Error creating lasthits.json: %v", err)
 		return
 	}
 	defer file.Close()
 
 	err = json.NewEncoder(file).Encode(lastHits)
 	if err != nil {
-		log.Printf("Error encoding lasthits.json: %v", err)
+		Log.Error("Error encoding lasthits.json: %v", err)
 	}
 }
 
@@ -48,15 +47,15 @@ func getAlreadyHaveFiles(dirName string) map[string]struct{} {
 	// Check if directory exists
 	fi, err := os.Stat(dirName)
 	if os.IsNotExist(err) {
-		log.Printf("Directory %s does not exist, skipping...\n", dirName)
+		Log.Info("Directory %s does not exist, skipping...", dirName)
 		return alreadyHaveFiles
 	}
 	if err != nil {
-		log.Printf("Error checking directory %s: %v\n", dirName, err)
+		Log.Error("Error checking directory %s: %v", dirName, err)
 		return alreadyHaveFiles
 	}
 	if !fi.IsDir() {
-		log.Printf("Path %s is not a directory\n", dirName)
+		Log.Error("Path %s is not a directory", dirName)
 		return alreadyHaveFiles
 	}
 
@@ -78,7 +77,7 @@ func getAlreadyHaveFiles(dirName string) map[string]struct{} {
 		return nil
 	})
 	if err != nil {
-		log.Printf("Error walking directory %s: %v", dirName, err)
+		Log.Error("Error walking directory %s: %v", dirName, err)
 	}
 	return alreadyHaveFiles
 }
@@ -95,12 +94,10 @@ func sanitizeFileName(fileName string) string {
 func isValidFileExtension(file []byte, fileExtensions []string) bool {
 	path := gjson.GetBytes(file, "path").String()
 	ext := filepath.Ext(path)
-	// fmt.Printf("\n%v\n", ext)
 	if len(ext) == 0 {
 		return false
 	}
 	for _, allowedExt := range fileExtensions {
-		// fmt.Printf("\n%v\n", allowedExt)
 		if strings.EqualFold(ext[1:], allowedExt) {
 			return true
 		}
