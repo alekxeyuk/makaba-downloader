@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -58,7 +57,7 @@ func (d *Downloader) DownloadFile(url, filepath string) error {
 		return err
 	}
 
-	log.Printf("\033[32mDownloading %s\033[0m", url)
+	Log.Info("Downloading %s", url)
 
 	tempFile := filepath + ".tmp"
 
@@ -66,7 +65,7 @@ func (d *Downloader) DownloadFile(url, filepath string) error {
 	for attempt := range maxRetries {
 		if attempt > 0 {
 			backoff := time.Duration(1<<uint(attempt-1)) * time.Second
-			log.Printf("Retrying download (attempt %d/%d) after %v", attempt+1, maxRetries, backoff)
+			Log.Warning("Retrying download (attempt %d/%d) after %v", attempt+1, maxRetries, backoff)
 			time.Sleep(backoff)
 		}
 
@@ -88,7 +87,7 @@ func (d *Downloader) DownloadFile(url, filepath string) error {
 			return err
 		}
 
-		log.Printf("Download attempt %d failed: %v", attempt+1, err)
+		Log.Error("Download attempt %d failed: %v", attempt+1, err)
 	}
 
 	os.Remove(tempFile)
@@ -118,7 +117,7 @@ func (d *Downloader) downloadWithResume(url, filepath string) error {
 
 	if bytesDownloaded > 0 {
 		req.Header.Set("Range", fmt.Sprintf("bytes=%d-", bytesDownloaded))
-		log.Printf("Resuming download %s from byte %d", filepath, bytesDownloaded)
+		Log.Info("Resuming download %s from byte %d", filepath, bytesDownloaded)
 	}
 
 	resp, err := d.client.Do(req)
@@ -136,7 +135,7 @@ func (d *Downloader) downloadWithResume(url, filepath string) error {
 		}
 	}
 
-	log.Printf("\033[33mSaving file to %s\033[0m", filepath)
+	Log.Info("Saving file to %s", filepath)
 
 	// Copy with a wrapper that can detect context cancellation
 	_, err = d.copyWithContext(file, resp.Body)
@@ -184,7 +183,7 @@ func (d *Downloader) copyWithContext(dst io.Writer, src io.Reader) (int64, error
 func (d *Downloader) DownloadFileAsync(url, filepath string) {
 	d.wg.Go(func() {
 		if err := d.DownloadFile(url, filepath); err != nil {
-			log.Printf("\033[31mError downloading %s: %v\033[0m", url, err)
+			Log.Error("Error downloading %s: %v", url, err)
 		}
 	})
 }
