@@ -66,3 +66,6 @@ func (l *Logger) Fatal(format string, v ...any) {
 func (l *Logger) Success(format string, v ...any) {
 	l.success.Printf(format, v...)
 }
+
+// Global logger instance for use throughout the package
+var Log = NewLogger()
