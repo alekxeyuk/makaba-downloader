@@ -21,6 +21,9 @@ type Logger struct {
 	error   *log.Logger
 	warning *log.Logger
 	debug   *log.Logger
+	trace   *log.Logger
+	fatal   *log.Logger
+	success *log.Logger
 }
 
 func NewLogger() *Logger {
@@ -29,21 +32,37 @@ func NewLogger() *Logger {
 		error:   log.New(os.Stderr, colorRed+"[ERROR]"+colorReset+" ", log.LstdFlags),
 		warning: log.New(os.Stdout, colorYellow+"[WARN]"+colorReset+" ", log.LstdFlags),
 		debug:   log.New(os.Stdout, colorCyan+"[DEBUG]"+colorReset+" ", log.LstdFlags),
+		trace:   log.New(os.Stdout, colorBlue+"[TRACE]"+colorReset+" ", log.LstdFlags),
+		fatal:   log.New(os.Stderr, colorPurple+"[FATAL]"+colorReset+" ", log.LstdFlags),
+		success: log.New(os.Stdout, colorWhite+"[SUCCESS]"+colorReset+" ", log.LstdFlags),
 	}
 }
 
-func (l *Logger) Info(format string, v ...interface{}) {
+func (l *Logger) Info(format string, v ...any) {
 	l.info.Printf(format, v...)
 }
 
-func (l *Logger) Error(format string, v ...interface{}) {
+func (l *Logger) Error(format string, v ...any) {
 	l.error.Printf(format, v...)
 }
 
-func (l *Logger) Warning(format string, v ...interface{}) {
+func (l *Logger) Warning(format string, v ...any) {
 	l.warning.Printf(format, v...)
 }
 
-func (l *Logger) Debug(format string, v ...interface{}) {
+func (l *Logger) Debug(format string, v ...any) {
 	l.debug.Printf(format, v...)
+}
+
+func (l *Logger) Trace(format string, v ...any) {
+	l.trace.Printf(format, v...)
+}
+
+func (l *Logger) Fatal(format string, v ...any) {
+	l.fatal.Printf(format, v...)
+	os.Exit(1)
+}
+
+func (l *Logger) Success(format string, v ...any) {
+	l.success.Printf(format, v...)
 }
