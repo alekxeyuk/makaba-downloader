@@ -1,0 +1,13 @@
+{
+  "defaults": {
+    "thread_subj_substrings": ["tag"],
+    "file_extensions": ["webm", "mp4", "gif", "jpg", "png", "jpeg", "webp", "apng", "mkv"],
+    "ignored_substrings": ["ignore"]
+  },
+  "boards": [
+    {"board": "b", "dir_name": "B"}
+  ],
+  "tags": ["tag"],
+  "ignored_tags": ["ignore"],
+  "usercode_auth": "cookie"
+}
