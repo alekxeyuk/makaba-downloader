@@ -11,9 +11,11 @@ type ThreadInfo struct {
 	LastHit int64
 }
 
-func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ignoredSubstrings []string, lastHits map[string]int64) []ThreadInfo {
+func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ignoredSubstrings []string, lastHits map[string]int64) ([]ThreadInfo, int64) {
 	var threads []ThreadInfo
 	boardID := gjson.GetBytes(catalog, "board.id").String()
+
+	threadsCount := gjson.GetBytes(catalog, "threads.#").Int()
 
 	for _, thread := range gjson.GetBytes(catalog, "threads").Array() {
 		comment := gjson.GetBytes([]byte(thread.Raw), "comment").String()
@@ -49,7 +51,7 @@ func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ig
 			}
 		}
 	}
-	return threads
+	return threads, threadsCount
 }
 
 func containsSubstring(s string, substrings []string) bool {
