@@ -28,43 +28,43 @@ type Logger struct {
 
 func NewLogger() *Logger {
 	return &Logger{
-		info:    log.New(os.Stdout, colorGreen+"[INFO]"+colorReset+" ", log.LstdFlags),
-		error:   log.New(os.Stderr, colorRed+"[ERROR]"+colorReset+" ", log.LstdFlags),
-		warning: log.New(os.Stdout, colorYellow+"[WARN]"+colorReset+" ", log.LstdFlags),
-		debug:   log.New(os.Stdout, colorCyan+"[DEBUG]"+colorReset+" ", log.LstdFlags),
-		trace:   log.New(os.Stdout, colorBlue+"[TRACE]"+colorReset+" ", log.LstdFlags),
-		fatal:   log.New(os.Stderr, colorPurple+"[FATAL]"+colorReset+" ", log.LstdFlags),
-		success: log.New(os.Stdout, colorWhite+"[SUCCESS]"+colorReset+" ", log.LstdFlags),
+		info:    log.New(os.Stdout, colorGreen+"[INFO]"+" ", log.LstdFlags),
+		error:   log.New(os.Stderr, colorRed+"[ERROR]"+" ", log.LstdFlags),
+		warning: log.New(os.Stdout, colorYellow+"[WARN]"+" ", log.LstdFlags),
+		debug:   log.New(os.Stdout, colorCyan+"[DEBUG]"+" ", log.LstdFlags),
+		trace:   log.New(os.Stdout, colorBlue+"[TRACE]"+" ", log.LstdFlags),
+		fatal:   log.New(os.Stderr, colorPurple+"[FATAL]"+" ", log.LstdFlags),
+		success: log.New(os.Stdout, colorWhite+"[SUCCESS]"+" ", log.LstdFlags),
 	}
 }
 
 func (l *Logger) Info(format string, v ...any) {
-	l.info.Printf(format, v...)
+	l.info.Printf(format+colorReset, v...)
 }
 
 func (l *Logger) Error(format string, v ...any) {
-	l.error.Printf(format, v...)
+	l.error.Printf(format+colorReset, v...)
 }
 
 func (l *Logger) Warning(format string, v ...any) {
-	l.warning.Printf(format, v...)
+	l.warning.Printf(format+colorReset, v...)
 }
 
 func (l *Logger) Debug(format string, v ...any) {
-	l.debug.Printf(format, v...)
+	l.debug.Printf(format+colorReset, v...)
 }
 
 func (l *Logger) Trace(format string, v ...any) {
-	l.trace.Printf(format, v...)
+	l.trace.Printf(format+colorReset, v...)
 }
 
 func (l *Logger) Fatal(format string, v ...any) {
-	l.fatal.Printf(format, v...)
+	l.fatal.Printf(format+colorReset, v...)
 	os.Exit(1)
 }
 
 func (l *Logger) Success(format string, v ...any) {
-	l.success.Printf(format, v...)
+	l.success.Printf(format+colorReset, v...)
 }
 
 // Global logger instance for use throughout the package
