@@ -135,7 +135,7 @@ func (d *Downloader) downloadWithResume(url, filepath string) error {
 		}
 	}
 
-	Log.Info("Saving file to %s", filepath)
+	Log.Trace("Saving file to %s", filepath)
 
 	// Copy with a wrapper that can detect context cancellation
 	_, err = d.copyWithContext(file, resp.Body)
