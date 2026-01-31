@@ -40,7 +40,7 @@ func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ig
 			key := boardID + "_" + threadNum
 			storedLastHit, exists := lastHits[key]
 			if !exists || currentLastHit > storedLastHit {
-				Log.Debug("Found matching thread with new activity: %s (lasthit: %d)", threadNum, currentLastHit)
+				Log.Debug("Found matching thread with new activity: %s (lasthit: %d -> %d)", threadNum, storedLastHit, currentLastHit)
 
 				threadData, err := api.threadGet(boardID, threadNum)
 				if err != nil {
