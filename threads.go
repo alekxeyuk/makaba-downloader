@@ -34,7 +34,7 @@ func getThreads(api *DvachApi, catalog []byte, threadSubjSubstrings []string, ig
 
 		if hasDesired && !hasIgnored {
 			threadNum := gjson.GetBytes([]byte(thread.Raw), "num").String()
-			currentLastHit := gjson.GetBytes([]byte(thread.Raw), "files_count").Int()
+			currentLastHit := gjson.GetBytes([]byte(thread.Raw), "lasthit").Int()
 
 			// Check if lasthit is newer than what we remember
 			key := boardID + "_" + threadNum
